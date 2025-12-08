@@ -1,5 +1,7 @@
 // app/api/clickfunnels/auth/route.ts
 import { NextResponse } from "next/server";
+import { cookies as nextCookies } from "next/headers";
+import crypto from "crypto";
 
 const CF_AUTHORIZE = "https://accounts.myclickfunnels.com/oauth/authorize";
 
@@ -17,6 +19,10 @@ function getBaseUrl(req: Request) {
 export async function GET(req: Request) {
   const base = getBaseUrl(req);
   const redirect = `${base}/api/clickfunnels/auth/callback`;
+  const state = crypto.randomBytes(32).toString("hex");
+
+  const cookies = await nextCookies();
+  cookies.set("cf_oauth_state", state, { maxAge: 600, httpOnly: true, secure: true });
 
   const params = new URLSearchParams({
     response_type: "code",
@@ -27,6 +33,7 @@ export async function GET(req: Request) {
       "orders:read",
       "fulfillments:read", // remove if your app doesn’t have this scope approved
     ].join(" "),
+    state,
   });
 
   // Optional: include &state= to protect against CSRF (store in cookie if you add this)

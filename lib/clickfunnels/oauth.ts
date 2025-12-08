@@ -1,4 +1,3 @@
-// lib/clickfunnels/oauth.ts
 import "server-only";
 import {
   CfToken,
@@ -19,7 +18,7 @@ export function clickfunnelsRedirectUri(): string {
   return `${appUrl()}/api/clickfunnels/auth/callback`;
 }
 
-export function buildAuthorizeUrl(params: { client_id: string; scope: string }) {
+export function buildAuthorizeUrl(params: { client_id: string; scope: string; state?: string }) {
   const redirect_uri = clickfunnelsRedirectUri();
   const base = "https://accounts.myclickfunnels.com/oauth/authorize";
   const url = new URL(base);
@@ -27,7 +26,7 @@ export function buildAuthorizeUrl(params: { client_id: string; scope: string }) 
   url.searchParams.set("client_id", params.client_id);
   url.searchParams.set("redirect_uri", redirect_uri);
   url.searchParams.set("scope", params.scope);
-  // (Optional) add state later
+  if (params.state) url.searchParams.set("state", params.state);
   return url.toString();
 }
 
