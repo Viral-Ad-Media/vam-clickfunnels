@@ -73,6 +73,8 @@ export async function upsertToken(userId: string, tok: CfToken) {
 
 export async function ensureUserId() {
   const uid = await getUserId();
-  if (!uid) throw new Error("Not authenticated");
+  if (!uid) {
+    throw new Error("Not authenticated. Sign in to Supabase before using ClickFunnels routes.");
+  }
   return uid;
 }

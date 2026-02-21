@@ -39,6 +39,15 @@ export async function getServerSupabase(): Promise<SupabaseClient> {
 export async function getUserId(): Promise<string | null> {
   const sb = await getServerSupabase();
   const { data, error } = await sb.auth.getUser();
-  if (error) throw new Error(`Failed to load authenticated user: ${error.message}`);
+  if (error) {
+    const message = error.message.toLowerCase();
+    const isMissingSession =
+      message.includes("auth session missing") ||
+      message.includes("session missing") ||
+      message.includes("invalid jwt");
+
+    if (isMissingSession) return null;
+    throw new Error(`Failed to load authenticated user: ${error.message}`);
+  }
   return data.user?.id ?? null;
 }
