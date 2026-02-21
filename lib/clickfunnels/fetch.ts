@@ -1,7 +1,7 @@
 // lib/clickfunnels/fetch.ts
 import "server-only";
 import { getValidTokenForCurrentUser } from "./oauth";
-import type { CfApiResponse, CfOrder, CfFulfillment, ApiErrorResponse } from "./types";
+import type { CfApiResponse, CfOrder, CfFulfillment } from "./types";
 
 function withWorkspace(base: string, path: string) {
   return base.replace(/\/+$/, "") + (path.startsWith("/") ? path : `/${path}`);

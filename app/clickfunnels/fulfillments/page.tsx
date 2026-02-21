@@ -1,15 +1,22 @@
-// app/dashboard/clickfunnels/fulfillments/page.tsx
+// app/clickfunnels/fulfillments/page.tsx
 import Link from "next/link";
 import { fetchFulfillments } from "@/lib/clickfunnels/fetch";
 
-export default async function Page({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
-  const orderId = Array.isArray(searchParams.order) ? searchParams.order[0] : searchParams.order;
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function Page({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+  const orderId = Array.isArray(resolvedSearchParams.order)
+    ? resolvedSearchParams.order[0]
+    : resolvedSearchParams.order;
   if (!orderId) {
     return (
       <div className="max-w-3xl mx-auto py-8">
         <h1 className="text-xl font-semibold">Fulfillments</h1>
         <div className="text-sm text-slate-600">Open an order to view fulfillments.</div>
-        <Link href="/dashboard/clickfunnels/orders" className="underline text-indigo-700 mt-2 inline-block">Go to Orders</Link>
+        <Link href="/clickfunnels/orders" className="underline text-indigo-700 mt-2 inline-block">Go to Orders</Link>
       </div>
     );
   }
@@ -29,7 +36,7 @@ export default async function Page({ searchParams }: { searchParams: Record<stri
             </tr>
           </thead>
           <tbody>
-            {rows.map((r: any) => (
+            {rows.map((r) => (
               <tr key={r.id} className="border-t">
                 <td className="p-2">{r.id}</td>
                 <td className="p-2">{r.status ?? "—"}</td>
@@ -42,7 +49,7 @@ export default async function Page({ searchParams }: { searchParams: Record<stri
           </tbody>
         </table>
       </div>
-      <Link href={`/dashboard/clickfunnels/orders/${orderId}`} className="underline text-indigo-700">Back to Order</Link>
+      <Link href={`/clickfunnels/orders/${orderId}`} className="underline text-indigo-700">Back to Order</Link>
     </div>
   );
 }

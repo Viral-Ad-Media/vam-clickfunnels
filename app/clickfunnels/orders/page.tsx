@@ -1,4 +1,4 @@
-// app/dashboard/clickfunnels/orders/page.tsx
+// app/clickfunnels/orders/page.tsx
 import Link from "next/link";
 import { fetchOrders } from "@/lib/clickfunnels/fetch";
 
@@ -22,16 +22,16 @@ export default async function Page() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((r: any) => (
+            {rows.map((r) => (
               <tr key={r.id} className="border-t">
                 <td className="p-2">
-                  <Link href={`/dashboard/clickfunnels/orders/${r.id}`} className="text-indigo-700 underline">{r.id}</Link>
+                  <Link href={`/clickfunnels/orders/${r.id}`} className="text-indigo-700 underline">{r.id}</Link>
                 </td>
                 <td className="p-2">{r.customer_email ?? "—"}</td>
                 <td className="p-2">{r.total_amount ?? "—"}</td>
                 <td className="p-2">{r.created_at ?? "—"}</td>
                 <td className="p-2">
-                  <Link href={`/dashboard/clickfunnels/fulfillments?order=${r.id}`} className="underline">View</Link>
+                  <Link href={`/clickfunnels/fulfillments?order=${r.id}`} className="underline">View</Link>
                 </td>
               </tr>
             ))}

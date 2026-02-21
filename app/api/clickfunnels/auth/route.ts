@@ -1,43 +1,48 @@
-// app/api/clickfunnels/auth/route.ts
 import { NextResponse } from "next/server";
 import { cookies as nextCookies } from "next/headers";
 import crypto from "crypto";
+import { buildAuthorizeUrl } from "@/lib/clickfunnels/oauth";
+import { ensureUserId, getAppConfig } from "@/lib/clickfunnels/tokens";
 
-const CF_AUTHORIZE = "https://accounts.myclickfunnels.com/oauth/authorize";
+const SCOPE = "offline_access orders:read fulfillments:read";
 
-// a tiny helper that guarantees an absolute base URL in every env
-function getBaseUrl(req: Request) {
-  // Prefer explicit env (works on Vercel + local)
-  const fromEnv = process.env.NEXT_PUBLIC_SITE_URL;
-  if (fromEnv) return fromEnv.replace(/\/$/, "");
-
-  // Fallback: derive from the incoming request (works in dev)
+function requestBaseUrl(req: Request) {
   const url = new URL(req.url);
   return `${url.protocol}//${url.host}`;
 }
 
+function shouldUseSecureCookie(req: Request) {
+  return new URL(req.url).protocol === "https:" || process.env.NODE_ENV === "production";
+}
+
 export async function GET(req: Request) {
-  const base = getBaseUrl(req);
-  const redirect = `${base}/api/clickfunnels/auth/callback`;
-  const state = crypto.randomBytes(32).toString("hex");
+  try {
+    const uid = await ensureUserId();
+    const cfg = await getAppConfig(uid);
+    if (!cfg) {
+      return NextResponse.redirect(new URL("/settings?error=missing_config", req.url));
+    }
 
-  const cookies = await nextCookies();
-  cookies.set("cf_oauth_state", state, { maxAge: 600, httpOnly: true, secure: true });
+    const state = crypto.randomBytes(32).toString("hex");
+    const cookies = await nextCookies();
+    cookies.set("cf_oauth_state", state, {
+      maxAge: 600,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: shouldUseSecureCookie(req),
+      path: "/",
+    });
 
-  const params = new URLSearchParams({
-    response_type: "code",
-    client_id: process.env.CF_CLIENT_ID!,
-    redirect_uri: redirect, // do NOT pre-encode; URLSearchParams will handle it
-    scope: [
-      "offline_access",
-      "orders:read",
-      "fulfillments:read", // remove if your app doesn’t have this scope approved
-    ].join(" "),
-    state,
-  });
+    const url = buildAuthorizeUrl({
+      client_id: cfg.client_id,
+      scope: SCOPE,
+      state,
+      baseUrl: requestBaseUrl(req),
+    });
 
-  // Optional: include &state= to protect against CSRF (store in cookie if you add this)
-  // params.set("state", someRandomString)
-
-  return NextResponse.redirect(`${CF_AUTHORIZE}?${params.toString()}`);
+    return NextResponse.redirect(url);
+  } catch (errorValue: unknown) {
+    const message = errorValue instanceof Error ? errorValue.message : "Failed to start OAuth";
+    return NextResponse.redirect(new URL(`/settings?error=${encodeURIComponent(message)}`, req.url));
+  }
 }

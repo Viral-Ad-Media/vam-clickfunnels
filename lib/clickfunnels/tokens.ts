@@ -2,6 +2,13 @@
 import "server-only";
 import { getServerSupabase, getUserId } from "./server";
 
+type AppConfig = {
+  user_id: string;
+  client_id: string;
+  client_secret: string;
+  workspace_url: string;
+};
+
 export type CfToken = {
   access_token: string;
   refresh_token: string;
@@ -12,18 +19,32 @@ export type CfToken = {
 
 export async function getAppConfig(userId: string) {
   const sb = await getServerSupabase();
-  const { data } = await sb.from("clickfunnels_apps").select("*").eq("user_id", userId).single();
-  return data as { user_id: string; client_id: string; client_secret: string; workspace_url: string } | null;
+  const { data, error } = await sb
+    .from("clickfunnels_apps")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) throw new Error(`Failed to load ClickFunnels config: ${error.message}`);
+  return data as AppConfig | null;
 }
 
 export async function upsertAppConfig(userId: string, cfg: { client_id: string; client_secret: string; workspace_url: string }) {
   const sb = await getServerSupabase();
-  await sb.from("clickfunnels_apps").upsert({ user_id: userId, ...cfg, updated_at: new Date().toISOString() });
+  const { error } = await sb.from("clickfunnels_apps").upsert(
+    { user_id: userId, ...cfg, updated_at: new Date().toISOString() },
+    { onConflict: "user_id" }
+  );
+  if (error) throw new Error(`Failed to save ClickFunnels config: ${error.message}`);
 }
 
 export async function getTokenForUser(userId: string) {
   const sb = await getServerSupabase();
-  const { data } = await sb.from("clickfunnels_tokens").select("*").eq("user_id", userId).single();
+  const { data, error } = await sb
+    .from("clickfunnels_tokens")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) throw new Error(`Failed to load ClickFunnels token: ${error.message}`);
   return data as (CfToken & { user_id: string }) | null;
 }
 
@@ -35,15 +56,19 @@ export function isExpired(tok: CfToken | null) {
 
 export async function upsertToken(userId: string, tok: CfToken) {
   const sb = await getServerSupabase();
-  await sb.from("clickfunnels_tokens").upsert({
-    user_id: userId,
-    access_token: tok.access_token,
-    refresh_token: tok.refresh_token,
-    token_type: tok.token_type ?? "Bearer",
-    scope: tok.scope ?? null,
-    expires_at: tok.expires_at,
-    updated_at: new Date().toISOString(),
-  });
+  const { error } = await sb.from("clickfunnels_tokens").upsert(
+    {
+      user_id: userId,
+      access_token: tok.access_token,
+      refresh_token: tok.refresh_token,
+      token_type: tok.token_type ?? "Bearer",
+      scope: tok.scope ?? null,
+      expires_at: tok.expires_at,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id" }
+  );
+  if (error) throw new Error(`Failed to save ClickFunnels token: ${error.message}`);
 }
 
 export async function ensureUserId() {

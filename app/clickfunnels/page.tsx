@@ -1,4 +1,4 @@
-// app/dashboard/clickfunnels/page.tsx
+// app/clickfunnels/page.tsx
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -9,13 +9,14 @@ export default async function Page() {
   let count = 0,
     status: number | null = null,
     error: string | null = null;
+
   try {
     const res = await fetchOrders({ page: 1, per_page: 5 });
     status = res.status;
     if (res.ok && Array.isArray(res.data?.data)) count = res.data.data.length;
-    else error = JSON.stringify(res.data);
-  } catch (e: any) {
-    error = e?.message || "Failed";
+    else error = res.error ?? "Failed to fetch orders";
+  } catch (errorValue: unknown) {
+    error = errorValue instanceof Error ? errorValue.message : "Failed";
   }
 
   return (

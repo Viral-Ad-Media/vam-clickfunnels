@@ -8,18 +8,27 @@ import {
   ensureUserId,
 } from "./tokens";
 
-function appUrl(): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL;
-  if (!base) throw new Error("NEXT_PUBLIC_APP_URL is not set");
+function normalizeBaseUrl(base: string): string {
   return base.replace(/\/+$/, "");
 }
 
-export function clickfunnelsRedirectUri(): string {
-  return `${appUrl()}/api/clickfunnels/auth/callback`;
+function appUrl(fallbackUrl?: string): string {
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? fallbackUrl;
+  if (!base) throw new Error("NEXT_PUBLIC_APP_URL is not set");
+  return normalizeBaseUrl(base);
 }
 
-export function buildAuthorizeUrl(params: { client_id: string; scope: string; state?: string }) {
-  const redirect_uri = clickfunnelsRedirectUri();
+export function clickfunnelsRedirectUri(baseUrl?: string): string {
+  return `${appUrl(baseUrl)}/api/clickfunnels/auth/callback`;
+}
+
+export function buildAuthorizeUrl(params: {
+  client_id: string;
+  scope: string;
+  state?: string;
+  baseUrl?: string;
+}) {
+  const redirect_uri = clickfunnelsRedirectUri(params.baseUrl);
   const base = "https://accounts.myclickfunnels.com/oauth/authorize";
   const url = new URL(base);
   url.searchParams.set("response_type", "code");
@@ -33,9 +42,10 @@ export function buildAuthorizeUrl(params: { client_id: string; scope: string; st
 export async function exchangeCodeForToken(
   code: string,
   client_id: string,
-  client_secret: string
+  client_secret: string,
+  baseUrl?: string
 ): Promise<CfToken> {
-  const redirect_uri = clickfunnelsRedirectUri();
+  const redirect_uri = clickfunnelsRedirectUri(baseUrl);
 
   const res = await fetch("https://accounts.myclickfunnels.com/oauth/token", {
     method: "POST",
@@ -67,8 +77,9 @@ export async function refreshToken(current: {
   refresh_token: string;
   client_id: string;
   client_secret: string;
+  baseUrl?: string;
 }): Promise<CfToken> {
-  const redirect_uri = clickfunnelsRedirectUri();
+  const redirect_uri = clickfunnelsRedirectUri(current.baseUrl);
 
   const res = await fetch("https://accounts.myclickfunnels.com/oauth/token", {
     method: "POST",

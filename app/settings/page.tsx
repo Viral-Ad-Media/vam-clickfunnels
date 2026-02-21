@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
@@ -220,6 +221,13 @@ export default function SettingsPage() {
                     {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                     {loading ? "Saving..." : "Save Configuration"}
                   </button>
+
+                  <a
+                    href="/api/clickfunnels/auth"
+                    className="w-full h-12 rounded-lg border border-input hover:bg-accent transition-colors flex items-center justify-center font-medium"
+                  >
+                    Connect ClickFunnels
+                  </a>
                 </form>
 
                 {/* Info Box */}
@@ -229,10 +237,13 @@ export default function SettingsPage() {
                   </h4>
                   <ul className="text-xs text-blue-800 space-y-1">
                     <li>• Save your configuration above</li>
-                    <li>• Go to the Dashboard to connect your ClickFunnels account</li>
-                    <li>• You'll be redirected to authorize the connection</li>
+                    <li>• Click Connect ClickFunnels to authorize your account</li>
+                    <li>• You&apos;ll be redirected to approve the connection</li>
                     <li>• Once approved, you can view orders and fulfillments</li>
                   </ul>
+                  <Link href="/clickfunnels" className="text-xs text-blue-900 underline mt-3 inline-block">
+                    Open Dashboard →
+                  </Link>
                 </div>
               </div>
             </div>

@@ -1,5 +1,4 @@
 // lib/clickfunnels/server.ts
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import "server-only";
 import { cookies as nextCookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
@@ -39,6 +38,7 @@ export async function getServerSupabase(): Promise<SupabaseClient> {
 
 export async function getUserId(): Promise<string | null> {
   const sb = await getServerSupabase();
-  const { data } = await sb.auth.getUser();
+  const { data, error } = await sb.auth.getUser();
+  if (error) throw new Error(`Failed to load authenticated user: ${error.message}`);
   return data.user?.id ?? null;
 }
