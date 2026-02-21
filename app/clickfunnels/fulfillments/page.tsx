@@ -1,6 +1,8 @@
-// app/clickfunnels/fulfillments/page.tsx
 import Link from "next/link";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { fetchFulfillments } from "@/lib/clickfunnels/fetch";
+import { Boxes, PackageSearch } from "lucide-react";
 
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -11,45 +13,94 @@ export default async function Page({ searchParams }: PageProps) {
   const orderId = Array.isArray(resolvedSearchParams.order)
     ? resolvedSearchParams.order[0]
     : resolvedSearchParams.order;
+
   if (!orderId) {
     return (
-      <div className="max-w-3xl mx-auto py-8">
-        <h1 className="text-xl font-semibold">Fulfillments</h1>
-        <div className="text-sm text-slate-600">Open an order to view fulfillments.</div>
-        <Link href="/clickfunnels/orders" className="underline text-indigo-700 mt-2 inline-block">Go to Orders</Link>
+      <div className="page-shell flex min-h-screen flex-col">
+        <Header />
+
+        <main className="container max-w-screen-2xl flex-1 py-12">
+          <section className="surface-panel reveal mx-auto max-w-3xl p-8 text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/18 text-primary">
+              <PackageSearch className="h-6 w-6" />
+            </div>
+            <h1 className="text-2xl font-semibold">Select an order first</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Open an order to load fulfillment rows for that order ID.
+            </p>
+            <Link
+              href="/clickfunnels/orders"
+              className="mt-5 inline-flex h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground"
+            >
+              Go to Orders
+            </Link>
+          </section>
+        </main>
+
+        <Footer />
       </div>
     );
   }
+
   const res = await fetchFulfillments(orderId);
   const rows = Array.isArray(res.data?.data) ? res.data.data : [];
 
   return (
-    <div className="max-w-4xl mx-auto py-8 space-y-4">
-      <h1 className="text-xl font-semibold">Fulfillments for Order {orderId}</h1>
-      <div className="rounded border bg-white">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50">
-            <tr>
-              <th className="p-2 text-left">ID</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id} className="border-t">
-                <td className="p-2">{r.id}</td>
-                <td className="p-2">{r.status ?? "—"}</td>
-                <td className="p-2">{r.created_at ?? "—"}</td>
-              </tr>
-            ))}
-            {!rows.length && (
-              <tr><td className="p-3 text-slate-500" colSpan={3}>No fulfillments found.</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-      <Link href={`/clickfunnels/orders/${orderId}`} className="underline text-indigo-700">Back to Order</Link>
+    <div className="page-shell flex min-h-screen flex-col">
+      <Header />
+
+      <main className="container max-w-screen-2xl flex-1 space-y-6 py-10 sm:py-12">
+        <section className="surface-panel reveal p-6 sm:p-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <span className="info-chip w-fit">
+                <Boxes className="h-3.5 w-3.5" />
+                Fulfillment Tracking
+              </span>
+              <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">Order {orderId}</h1>
+              <p className="mt-1 text-sm text-muted-foreground">Status: {res.status}</p>
+            </div>
+            <Link
+              href={`/clickfunnels/orders/${orderId}`}
+              className="inline-flex h-10 items-center justify-center rounded-xl border border-white/80 bg-white/80 px-4 text-sm font-semibold hover:bg-white"
+            >
+              Back to Order
+            </Link>
+          </div>
+        </section>
+
+        <section className="surface-panel reveal reveal-delay-1 overflow-hidden p-2 sm:p-3">
+          <div className="overflow-x-auto rounded-2xl">
+            <table className="data-table min-w-[640px]">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr key={row.id}>
+                    <td className="font-medium">{row.id}</td>
+                    <td>{row.status ?? "--"}</td>
+                    <td>{row.created_at ?? "--"}</td>
+                  </tr>
+                ))}
+                {!rows.length && (
+                  <tr>
+                    <td colSpan={3} className="px-4 py-7 text-center text-sm text-muted-foreground">
+                      No fulfillments found for this order.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
     </div>
   );
 }

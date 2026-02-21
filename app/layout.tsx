@@ -18,9 +18,9 @@ export default function RootLayout({
         style={
           {
             "--font-geist-sans":
-              "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+              "'Avenir Next', 'Futura', 'Trebuchet MS', 'Segoe UI', sans-serif",
             "--font-geist-mono":
-              "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace",
+              "'IBM Plex Mono', 'SF Mono', Menlo, Monaco, Consolas, monospace",
           } as React.CSSProperties
         }
       >

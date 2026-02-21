@@ -1,23 +1,27 @@
+import Link from "next/link";
+
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-background/50">
-      <div className="container max-w-screen-2xl py-8">
+    <footer className="border-t border-white/55 bg-gradient-to-b from-white/55 to-white/75 backdrop-blur-xl">
+      <div className="container max-w-screen-2xl py-10">
         <div className="grid gap-8 sm:grid-cols-3">
-          <div>
-            <h3 className="text-sm font-semibold">ClickFunnels VAM</h3>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Seamless integration with ClickFunnels API for order and fulfillment management.
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold tracking-wide">ClickFunnels VAM</h3>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              A colorful control center for ClickFunnels orders, fulfillment tracking, and integration health.
             </p>
+            <span className="info-chip">Built for high-velocity teams</span>
           </div>
+
           <div>
             <h4 className="text-sm font-semibold">Resources</h4>
-            <ul className="mt-2 space-y-1 text-xs">
+            <ul className="mt-3 space-y-2 text-xs">
               <li>
                 <a
                   href="https://developers.myclickfunnels.com/docs/intro"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   API Documentation
                 </a>
@@ -27,30 +31,32 @@ export function Footer() {
                   href="https://myclickfunnels.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  ClickFunnels
+                  ClickFunnels Platform
                 </a>
               </li>
             </ul>
           </div>
+
           <div>
-            <h4 className="text-sm font-semibold">Legal</h4>
-            <ul className="mt-2 space-y-1 text-xs">
+            <h4 className="text-sm font-semibold">Navigate</h4>
+            <ul className="mt-3 space-y-2 text-xs">
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground">
-                  Privacy Policy
-                </a>
+                <Link href="/settings" className="text-muted-foreground transition-colors hover:text-foreground">
+                  Integration Settings
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-foreground">
-                  Terms of Service
-                </a>
+                <Link href="/clickfunnels" className="text-muted-foreground transition-colors hover:text-foreground">
+                  Dashboard
+                </Link>
               </li>
             </ul>
           </div>
         </div>
-        <div className="mt-8 border-t border-border pt-4 text-center text-xs text-muted-foreground">
+
+        <div className="mt-8 border-t border-white/65 pt-4 text-center text-xs text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} ClickFunnels VAM. All rights reserved.</p>
         </div>
       </div>
