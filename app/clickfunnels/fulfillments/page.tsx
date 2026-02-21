@@ -21,16 +21,16 @@ export default async function Page({ searchParams }: PageProps) {
 
         <main className="container max-w-screen-2xl flex-1 py-12">
           <section className="surface-panel reveal mx-auto max-w-3xl p-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/18 text-primary">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-primary/14 text-primary">
               <PackageSearch className="h-6 w-6" />
             </div>
-            <h1 className="text-2xl font-semibold">Select an order first</h1>
+            <h1 className="text-2xl font-semibold">Select an order</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Open an order to load fulfillment rows for that order ID.
+              Open an order record before viewing fulfillment data.
             </p>
             <Link
               href="/clickfunnels/orders"
-              className="mt-5 inline-flex h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground"
+              className="mt-5 inline-flex h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-semibold text-primary-foreground"
             >
               Go to Orders
             </Link>
@@ -62,7 +62,7 @@ export default async function Page({ searchParams }: PageProps) {
             </div>
             <Link
               href={`/clickfunnels/orders/${orderId}`}
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-white/80 bg-white/80 px-4 text-sm font-semibold hover:bg-white"
+              className="inline-flex h-10 items-center justify-center rounded-lg border border-border/80 bg-white/80 px-4 text-sm font-semibold hover:bg-white"
             >
               Back to Order
             </Link>
@@ -70,7 +70,7 @@ export default async function Page({ searchParams }: PageProps) {
         </section>
 
         <section className="surface-panel reveal reveal-delay-1 overflow-hidden p-2 sm:p-3">
-          <div className="overflow-x-auto rounded-2xl">
+          <div className="overflow-x-auto rounded-xl">
             <table className="data-table min-w-[640px]">
               <thead>
                 <tr>

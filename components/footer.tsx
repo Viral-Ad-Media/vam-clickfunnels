@@ -2,15 +2,14 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/55 bg-gradient-to-b from-white/55 to-white/75 backdrop-blur-xl">
+    <footer className="border-t border-border/70 bg-white/70 backdrop-blur-md">
       <div className="container max-w-screen-2xl py-10">
         <div className="grid gap-8 sm:grid-cols-3">
           <div className="space-y-3">
             <h3 className="text-sm font-semibold tracking-wide">ClickFunnels VAM</h3>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              A colorful control center for ClickFunnels orders, fulfillment tracking, and integration health.
+              Enterprise operations layer for ClickFunnels order and fulfillment workflows.
             </p>
-            <span className="info-chip">Built for high-velocity teams</span>
           </div>
 
           <div>
@@ -56,7 +55,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-white/65 pt-4 text-center text-xs text-muted-foreground">
+        <div className="mt-8 border-t border-border/70 pt-4 text-center text-xs text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} ClickFunnels VAM. All rights reserved.</p>
         </div>
       </div>

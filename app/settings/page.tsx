@@ -63,32 +63,32 @@ export default function SettingsPage() {
 
       <main className="container max-w-screen-2xl flex-1 space-y-6 py-10 sm:space-y-8 sm:py-12">
         <section className="surface-panel reveal p-7 sm:p-9">
-          <span className="info-chip">Configuration Studio</span>
-          <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">Connect your ClickFunnels workspace</h1>
+          <span className="info-chip">Integration Administration</span>
+          <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">Configure ClickFunnels access</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            Save OAuth credentials, validate workspace URL, and authorize your account to unlock orders and fulfillment views.
+            Register OAuth credentials, define the workspace endpoint, and establish authorized API access.
           </p>
         </section>
 
         <section className="grid gap-5 lg:grid-cols-[0.95fr_1.45fr]">
           <aside className="surface-panel reveal reveal-delay-1 p-6">
-            <h2 className="text-base font-semibold">Setup Path</h2>
+            <h2 className="text-base font-semibold">Implementation Checklist</h2>
             <ol className="mt-4 space-y-3 text-sm">
-              <li className="flex gap-3 rounded-xl border border-white/70 bg-white/70 p-3">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 font-semibold text-primary">1</span>
-                <span className="text-muted-foreground">Create an OAuth app in your ClickFunnels developer dashboard.</span>
+              <li className="flex gap-3 rounded-lg border border-border/80 bg-white/74 p-3">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary/15 font-semibold text-primary">1</span>
+                <span className="text-muted-foreground">Create an OAuth application in the ClickFunnels developer console.</span>
               </li>
-              <li className="flex gap-3 rounded-xl border border-white/70 bg-white/70 p-3">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 font-semibold text-primary">2</span>
-                <span className="text-muted-foreground">Paste the Client ID and Client Secret below.</span>
+              <li className="flex gap-3 rounded-lg border border-border/80 bg-white/74 p-3">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary/15 font-semibold text-primary">2</span>
+                <span className="text-muted-foreground">Enter your client credentials in this settings form.</span>
               </li>
-              <li className="flex gap-3 rounded-xl border border-white/70 bg-white/70 p-3">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 font-semibold text-primary">3</span>
-                <span className="text-muted-foreground">Provide the workspace API URL and save.</span>
+              <li className="flex gap-3 rounded-lg border border-border/80 bg-white/74 p-3">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary/15 font-semibold text-primary">3</span>
+                <span className="text-muted-foreground">Provide your workspace API URL and save configuration.</span>
               </li>
-              <li className="flex gap-3 rounded-xl border border-white/70 bg-white/70 p-3">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/20 font-semibold text-primary">4</span>
-                <span className="text-muted-foreground">Authorize the OAuth connection and verify dashboard status.</span>
+              <li className="flex gap-3 rounded-lg border border-border/80 bg-white/74 p-3">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-primary/15 font-semibold text-primary">4</span>
+                <span className="text-muted-foreground">Authorize the connection and verify dashboard status.</span>
               </li>
             </ol>
 
@@ -104,15 +104,15 @@ export default function SettingsPage() {
 
           <div className="surface-panel reveal reveal-delay-2 p-6 sm:p-8">
             <div className="mb-6">
-              <h2 className="text-2xl font-semibold">OAuth Credentials</h2>
+              <h2 className="text-2xl font-semibold">Credential Management</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                These values are saved server-side and used only for token exchange and refresh.
+                Values are stored server-side and used for token exchange and refresh workflows.
               </p>
             </div>
 
             {message && (
               <div
-                className={`mb-5 rounded-2xl border p-4 text-sm ${
+                className={`mb-5 rounded-xl border p-4 text-sm ${
                   message.type === "success"
                     ? "border-emerald-300 bg-emerald-50 text-emerald-900"
                     : "border-red-300 bg-red-50 text-red-900"
@@ -143,7 +143,7 @@ export default function SettingsPage() {
                   value={formData.client_id}
                   onChange={handleChange}
                   required
-                  className="h-11 w-full rounded-xl border border-white/80 bg-white/80 px-4 text-sm placeholder:text-muted-foreground focus:border-primary/45 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="h-11 w-full rounded-lg border border-border/80 bg-white/82 px-4 text-sm placeholder:text-muted-foreground focus:border-primary/45 focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -160,7 +160,7 @@ export default function SettingsPage() {
                   value={formData.client_secret}
                   onChange={handleChange}
                   required
-                  className="h-11 w-full rounded-xl border border-white/80 bg-white/80 px-4 text-sm placeholder:text-muted-foreground focus:border-primary/45 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="h-11 w-full rounded-lg border border-border/80 bg-white/82 px-4 text-sm placeholder:text-muted-foreground focus:border-primary/45 focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -177,7 +177,7 @@ export default function SettingsPage() {
                   value={formData.workspace_url}
                   onChange={handleChange}
                   required
-                  className="h-11 w-full rounded-xl border border-white/80 bg-white/80 px-4 text-sm placeholder:text-muted-foreground focus:border-primary/45 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="h-11 w-full rounded-lg border border-border/80 bg-white/82 px-4 text-sm placeholder:text-muted-foreground focus:border-primary/45 focus:outline-none focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -185,7 +185,7 @@ export default function SettingsPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/92 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   {loading ? "Saving..." : "Save Configuration"}
@@ -193,20 +193,20 @@ export default function SettingsPage() {
 
                 <a
                   href="/api/clickfunnels/auth"
-                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-white/80 bg-white/80 px-5 text-sm font-semibold transition-colors hover:bg-white"
+                  className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-border/80 bg-white/82 px-5 text-sm font-semibold transition-colors hover:bg-white"
                 >
                   <PlugZap className="h-4 w-4 text-primary" />
-                  Connect ClickFunnels
+                  Authorize Connection
                 </a>
               </div>
             </form>
 
-            <div className="mt-6 rounded-2xl border border-secondary/30 bg-secondary/12 p-4">
-              <h3 className="text-sm font-semibold">After connecting</h3>
+            <div className="mt-6 rounded-lg border border-border/80 bg-accent/60 p-4">
+              <h3 className="text-sm font-semibold">Post-configuration checks</h3>
               <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
-                <li>Go to dashboard to verify API status is 200.</li>
-                <li>Open orders to inspect current records.</li>
-                <li>Use fulfillment view from any order row.</li>
+                <li>Confirm dashboard API status is 200.</li>
+                <li>Open orders and verify record visibility.</li>
+                <li>Use an order to validate fulfillment retrieval.</li>
               </ul>
               <Link
                 href="/clickfunnels"

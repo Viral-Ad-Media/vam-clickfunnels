@@ -18,14 +18,14 @@ export default async function Page() {
             <div className="space-y-2">
               <span className="info-chip">
                 <ListOrdered className="h-3.5 w-3.5" />
-                Orders Feed
+                Orders Ledger
               </span>
               <h1 className="text-3xl font-semibold sm:text-4xl">ClickFunnels Orders</h1>
               <p className="text-sm text-muted-foreground">Status: {res.status} • Source: {res.url}</p>
             </div>
             <Link
               href="/clickfunnels"
-              className="inline-flex h-10 items-center justify-center rounded-xl border border-white/80 bg-white/80 px-4 text-sm font-semibold hover:bg-white"
+              className="inline-flex h-10 items-center justify-center rounded-lg border border-border/80 bg-white/80 px-4 text-sm font-semibold hover:bg-white"
             >
               Back to Dashboard
             </Link>
@@ -33,7 +33,7 @@ export default async function Page() {
         </section>
 
         <section className="surface-panel reveal reveal-delay-1 overflow-hidden p-2 sm:p-3">
-          <div className="overflow-x-auto rounded-2xl">
+          <div className="overflow-x-auto rounded-xl">
             <table className="data-table min-w-[760px]">
               <thead>
                 <tr>

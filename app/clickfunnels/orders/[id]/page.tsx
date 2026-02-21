@@ -26,7 +26,7 @@ export default async function Page({ params }: PageProps) {
             <div>
               <span className="info-chip w-fit">
                 <FileJson2 className="h-3.5 w-3.5" />
-                Order Snapshot
+                Order Detail Payload
               </span>
               <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">Order {id}</h1>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -36,13 +36,13 @@ export default async function Page({ params }: PageProps) {
             <div className="flex gap-2">
               <Link
                 href="/clickfunnels/orders"
-                className="inline-flex h-10 items-center justify-center rounded-xl border border-white/80 bg-white/80 px-4 text-sm font-semibold hover:bg-white"
+                className="inline-flex h-10 items-center justify-center rounded-lg border border-border/80 bg-white/80 px-4 text-sm font-semibold hover:bg-white"
               >
                 Orders
               </Link>
               <Link
                 href={`/clickfunnels/fulfillments?order=${id}`}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground"
               >
                 <Boxes className="h-4 w-4" />
                 Fulfillments
@@ -54,14 +54,14 @@ export default async function Page({ params }: PageProps) {
         <section className="grid gap-5 lg:grid-cols-2">
           <article className="surface-panel-dark reveal reveal-delay-1 overflow-hidden p-5">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-300">Order Details JSON</h2>
-            <pre className="max-h-[30rem] overflow-x-auto overflow-y-auto rounded-2xl border border-white/15 bg-slate-950/55 p-4 text-xs leading-relaxed text-slate-100">
+            <pre className="max-h-[30rem] overflow-x-auto overflow-y-auto rounded-xl border border-white/15 bg-slate-950/55 p-4 text-xs leading-relaxed text-slate-100">
               {JSON.stringify(details.data, null, 2)}
             </pre>
           </article>
 
           <article className="surface-panel-dark reveal reveal-delay-2 overflow-hidden p-5">
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-300">Fulfillments JSON</h2>
-            <pre className="max-h-[30rem] overflow-x-auto overflow-y-auto rounded-2xl border border-white/15 bg-slate-950/55 p-4 text-xs leading-relaxed text-slate-100">
+            <pre className="max-h-[30rem] overflow-x-auto overflow-y-auto rounded-xl border border-white/15 bg-slate-950/55 p-4 text-xs leading-relaxed text-slate-100">
               {JSON.stringify(fulfillments.data, null, 2)}
             </pre>
           </article>

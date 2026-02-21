@@ -29,15 +29,15 @@ export default async function Page() {
         <section className="surface-panel reveal p-7 sm:p-9">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-3">
-              <span className="info-chip">Integration Overview</span>
-              <h1 className="text-3xl font-semibold sm:text-4xl">ClickFunnels Dashboard</h1>
+              <span className="info-chip">Operations Dashboard</span>
+              <h1 className="text-3xl font-semibold sm:text-4xl">ClickFunnels Integration</h1>
               <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
-                Monitor connectivity, inspect order activity, and jump straight to order or fulfillment workflows.
+                Monitor service status, review latest order activity, and navigate directly into execution views.
               </p>
             </div>
             <Link
               href="/settings"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-white/80 bg-white/78 px-5 text-sm font-semibold transition-colors hover:bg-white"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border/80 bg-white/78 px-5 text-sm font-semibold transition-colors hover:bg-white"
             >
               <Settings className="h-4 w-4" />
               Integration Settings
@@ -56,15 +56,15 @@ export default async function Page() {
           <article className="surface-panel reveal reveal-delay-2 p-5">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Recent Orders</p>
             <p className="mt-2 text-3xl font-semibold">{count}</p>
-            <p className="mt-1 text-xs text-muted-foreground">Pulled from latest fetch</p>
+            <p className="mt-1 text-xs text-muted-foreground">Most recent fetch window</p>
           </article>
           <article className="surface-panel reveal reveal-delay-2 p-5">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">Sync Mode</p>
+            <p className="text-xs uppercase tracking-wide text-muted-foreground">Refresh Policy</p>
             <p className="mt-2 flex items-center gap-2 text-lg font-semibold">
               <RefreshCcw className="h-4 w-4 text-secondary" />
-              Manual Trigger
+              On-Demand
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">Refresh by revisiting dashboard</p>
+            <p className="mt-1 text-xs text-muted-foreground">Refresh on route revisit</p>
           </article>
           <article className="surface-panel reveal reveal-delay-3 p-5">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Workspace</p>
@@ -77,7 +77,7 @@ export default async function Page() {
         </section>
 
         {error && (
-          <section className="reveal reveal-delay-2 rounded-3xl border border-red-300/70 bg-red-50/90 p-5 text-red-900">
+          <section className="reveal reveal-delay-2 rounded-2xl border border-red-300/80 bg-red-50/90 p-5 text-red-900">
             <div className="flex items-start gap-3">
               <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0" />
               <div>
@@ -97,16 +97,16 @@ export default async function Page() {
             className="surface-panel reveal reveal-delay-2 group block p-6"
           >
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-primary/20 p-2 text-primary">
+              <div className="rounded-lg bg-primary/14 p-2 text-primary">
                 <ClipboardList className="h-5 w-5" />
               </div>
               <h2 className="text-xl font-semibold">Orders</h2>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
-              Browse order IDs, customer emails, and totals with quick links into detail pages.
+              Review order identifiers, customer contact details, and transaction values.
             </p>
             <p className="mt-4 text-sm font-semibold text-primary transition-transform group-hover:translate-x-0.5">
-              View Orders {"->"}
+              Open Orders {"->"}
             </p>
           </Link>
 
@@ -115,16 +115,16 @@ export default async function Page() {
             className="surface-panel reveal reveal-delay-3 group block p-6"
           >
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-secondary/20 p-2 text-secondary-foreground">
+              <div className="rounded-lg bg-secondary/14 p-2 text-secondary-foreground">
                 <Boxes className="h-5 w-5" />
               </div>
               <h2 className="text-xl font-semibold">Fulfillments</h2>
             </div>
             <p className="mt-3 text-sm text-muted-foreground">
-              Track shipment lifecycle and statuses for each order directly from the workspace.
+              Inspect fulfillment lifecycle updates and status progression for individual orders.
             </p>
             <p className="mt-4 text-sm font-semibold text-secondary-foreground transition-transform group-hover:translate-x-0.5">
-              View Fulfillments {"->"}
+              Open Fulfillments {"->"}
             </p>
           </Link>
         </section>
