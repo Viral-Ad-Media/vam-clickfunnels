@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/clickfunnels/server";
 import { requireActiveOrganization } from "@/lib/orgs/server";
 import { createStripeCheckoutSession } from "@/lib/billing/stripe";
+import { getSeatSummaryForOrganization } from "@/lib/orgs/seats";
 
 function asObject(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
@@ -27,9 +28,30 @@ export async function POST(req: Request) {
     const rawBody: unknown = await req.json().catch(() => ({}));
     const body = asObject(rawBody);
     const explicitPriceId = typeof body.price_id === "string" ? body.price_id.trim() : undefined;
+    const rawSeatQuantity = body.seat_quantity;
+
+    let requestedSeatQuantity: number | undefined;
+    if (rawSeatQuantity !== undefined) {
+      const parsed = Number(rawSeatQuantity);
+      if (!Number.isInteger(parsed) || parsed < 1) {
+        return NextResponse.json({ ok: false, error: "seat_quantity must be an integer greater than 0" }, { status: 400 });
+      }
+      requestedSeatQuantity = parsed;
+    }
 
     const context = await requireActiveOrganization({ requireManager: true });
     const sb = await getServerSupabase();
+    const seatSummary = await getSeatSummaryForOrganization(context.organization.id, { includePendingInvites: true });
+
+    const minSeatQuantity = Math.max(seatSummary.usedSeats, 1);
+    if (requestedSeatQuantity !== undefined && requestedSeatQuantity < minSeatQuantity) {
+      return NextResponse.json(
+        { ok: false, error: `seat_quantity cannot be less than seats already in use (${minSeatQuantity})` },
+        { status: 400 },
+      );
+    }
+
+    const checkoutQuantity = requestedSeatQuantity ?? minSeatQuantity;
 
     const { data: billingRow, error: billingError } = await sb
       .from("organization_billing")
@@ -58,6 +80,7 @@ export async function POST(req: Request) {
       priceId: explicitPriceId,
       customerId: (billingRow?.stripe_customer_id as string | null | undefined) ?? null,
       customerEmail: user?.email ?? null,
+      quantity: checkoutQuantity,
     });
 
     if (!session.url) {

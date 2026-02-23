@@ -5,6 +5,7 @@ import {
   listOrganizationsForUser,
   requireActiveOrganization,
 } from "@/lib/orgs/server";
+import { getSeatSummaryForOrganization } from "@/lib/orgs/seats";
 
 function asObject(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
@@ -22,13 +23,16 @@ export async function GET() {
     const organizations = await listOrganizationsForUser(context.userId);
 
     const sb = await getServerSupabase();
-    const { data: billing, error: billingError } = await sb
-      .from("organization_billing")
-      .select(
-        "stripe_customer_id,stripe_subscription_id,stripe_price_id,subscription_status,current_period_end,cancel_at_period_end",
-      )
-      .eq("organization_id", context.organization.id)
-      .maybeSingle();
+    const [{ data: billing, error: billingError }, seatSummary] = await Promise.all([
+      sb
+        .from("organization_billing")
+        .select(
+          "stripe_customer_id,stripe_subscription_id,stripe_price_id,subscription_status,current_period_end,cancel_at_period_end,seat_limit",
+        )
+        .eq("organization_id", context.organization.id)
+        .maybeSingle(),
+      getSeatSummaryForOrganization(context.organization.id, { includePendingInvites: false }),
+    ]);
 
     if (billingError) {
       throw new Error(`Failed to load billing details: ${billingError.message}`);
@@ -40,6 +44,7 @@ export async function GET() {
       activeOrganization: context.organization,
       organizations,
       billing: billing ?? null,
+      seatSummary,
     });
   } catch (errorValue: unknown) {
     const message = errorValue instanceof Error ? errorValue.message : "Failed";

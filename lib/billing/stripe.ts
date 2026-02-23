@@ -73,19 +73,22 @@ export async function createStripeCheckoutSession(params: {
   organizationId: string;
   successUrl: string;
   cancelUrl: string;
+  quantity?: number;
   priceId?: string;
   customerId?: string | null;
   customerEmail?: string | null;
 }): Promise<StripeCheckoutSession> {
   const body = new URLSearchParams();
+  const quantity = Number.isInteger(params.quantity) && (params.quantity ?? 0) > 0 ? Number(params.quantity) : 1;
 
   body.set("mode", "subscription");
   body.set("success_url", params.successUrl);
   body.set("cancel_url", params.cancelUrl);
   body.set("line_items[0][price]", params.priceId ?? defaultStripePriceId());
-  body.set("line_items[0][quantity]", "1");
+  body.set("line_items[0][quantity]", String(quantity));
   body.set("allow_promotion_codes", "true");
   body.set("metadata[organization_id]", params.organizationId);
+  body.set("metadata[seat_quantity]", String(quantity));
 
   if (params.customerId) {
     body.set("customer", params.customerId);

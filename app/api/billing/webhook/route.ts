@@ -12,6 +12,7 @@ type SubscriptionDetails = {
   subscriptionId: string | null;
   status: string | null;
   priceId: string | null;
+  seatLimit: number | null;
   currentPeriodEnd: string | null;
   cancelAtPeriodEnd: boolean;
 };
@@ -22,6 +23,15 @@ function asRecord(value: unknown): Record<string, unknown> | null {
 
 function asString(value: unknown): string | null {
   return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+function asPositiveInteger(value: unknown): number | null {
+  if (typeof value === "number" && Number.isInteger(value) && value > 0) return value;
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    if (Number.isInteger(parsed) && parsed > 0) return parsed;
+  }
+  return null;
 }
 
 function parseCurrentPeriodEnd(value: unknown) {
@@ -80,6 +90,7 @@ function parseCheckoutSessionBilling(object: Record<string, unknown>) {
 
   return {
     organizationId: asString(metadata?.organization_id),
+    seatLimit: asPositiveInteger(metadata?.seat_quantity),
     customerId: asString(object.customer),
     subscriptionId: asString(object.subscription),
   };
@@ -94,12 +105,14 @@ function parseSubscriptionObject(object: Record<string, unknown>): SubscriptionD
   const itemData = Array.isArray(items?.data) ? items?.data : [];
   const firstItem = asRecord(itemData[0]);
   const price = asRecord(firstItem?.price);
+  const quantity = asPositiveInteger(firstItem?.quantity);
 
   return {
     customerId,
     subscriptionId,
     status,
     priceId: asString(price?.id),
+    seatLimit: quantity,
     currentPeriodEnd: parseCurrentPeriodEnd(object.current_period_end),
     cancelAtPeriodEnd: Boolean(object.cancel_at_period_end),
   };
@@ -111,6 +124,7 @@ async function upsertOrganizationBillingRecord(params: {
   subscriptionId?: string | null;
   status?: string | null;
   priceId?: string | null;
+  seatLimit?: number | null;
   currentPeriodEnd?: string | null;
   cancelAtPeriodEnd?: boolean;
 }) {
@@ -123,6 +137,7 @@ async function upsertOrganizationBillingRecord(params: {
       stripe_subscription_id: params.subscriptionId ?? null,
       subscription_status: params.status ?? null,
       stripe_price_id: params.priceId ?? null,
+      seat_limit: params.seatLimit ?? null,
       current_period_end: params.currentPeriodEnd ?? null,
       cancel_at_period_end: params.cancelAtPeriodEnd ?? false,
       updated_at: new Date().toISOString(),
@@ -150,6 +165,7 @@ async function handleCheckoutCompleted(object: Record<string, unknown>) {
     customerId: parsed.customerId,
     subscriptionId: parsed.subscriptionId,
     status: "active",
+    seatLimit: parsed.seatLimit,
   });
 }
 
@@ -171,6 +187,7 @@ async function handleSubscriptionEvent(object: Record<string, unknown>) {
     subscriptionId: parsed.subscriptionId,
     status: parsed.status,
     priceId: parsed.priceId,
+    seatLimit: parsed.seatLimit,
     currentPeriodEnd: parsed.currentPeriodEnd,
     cancelAtPeriodEnd: parsed.cancelAtPeriodEnd,
   });
