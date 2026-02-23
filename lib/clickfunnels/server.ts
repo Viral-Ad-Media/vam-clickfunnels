@@ -5,8 +5,13 @@ import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 function validateEnv() {
-  const required = ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_ANON_KEY"];
-  const missing = required.filter((key) => !process.env[key]);
+  const missing: string[] = [];
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    missing.push("NEXT_PUBLIC_SUPABASE_URL");
+  }
+  if (!process.env.SUPABASE_ANON_KEY && !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    missing.push("SUPABASE_ANON_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  }
   if (missing.length > 0) {
     throw new Error(`Missing environment variables: ${missing.join(", ")}`);
   }
@@ -14,12 +19,15 @@ function validateEnv() {
 
 export async function getServerSupabase(): Promise<SupabaseClient> {
   validateEnv();
+  const anonKey = process.env.SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!anonKey) throw new Error("Missing Supabase anon key");
+
   const cookieStore = await nextCookies(); // <-- await it
 
   // Read-only cookie store in RSC; no-ops for set/remove are fine for our use.
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_ANON_KEY!,
+    anonKey,
     {
       cookies: {
         get(name: string) {
