@@ -1,7 +1,6 @@
 "use client";
 
-import { createBrowserClient } from "@supabase/ssr";
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -16,20 +15,12 @@ import {
 } from "lucide-react";
 
 export default function SettingsPage() {
-  const supabase = useMemo(() => {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!url || !anonKey) return null;
-    return createBrowserClient(url, anonKey);
-  }, []);
-
   const [formData, setFormData] = useState({
     client_id: "",
     client_secret: "",
     workspace_url: "",
   });
   const [loading, setLoading] = useState(false);
-  const [connecting, setConnecting] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,41 +28,12 @@ export default function SettingsPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const ensureSupabaseSession = useCallback(async () => {
-    if (!supabase) {
-      throw new Error(
-        "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY. Set them in .env.local."
-      );
-    }
-
-    const { data, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError) {
-      throw new Error(`Failed to load auth session: ${sessionError.message}`);
-    }
-
-    if (data.session) return;
-
-    const { error: anonError } = await supabase.auth.signInAnonymously();
-    if (!anonError) return;
-
-    const message = anonError.message.toLowerCase();
-    if (message.includes("anonymous sign-ins are disabled")) {
-      throw new Error(
-        "Supabase anonymous auth is disabled. Enable anonymous sign-ins in Supabase Auth, or sign in with a standard auth flow."
-      );
-    }
-
-    throw new Error(`Failed to start auth session: ${anonError.message}`);
-  }, [supabase]);
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
     setMessage(null);
 
     try {
-      await ensureSupabaseSession();
-
       const res = await fetch("/api/integrations/clickfunnels/config", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -80,6 +42,12 @@ export default function SettingsPage() {
 
       if (!res.ok) {
         const error = await res.json();
+        if (res.status === 401) {
+          throw new Error("Your session expired. Please log in again.");
+        }
+        if (res.status === 403) {
+          throw new Error("Organization admin access is required to update credentials.");
+        }
         throw new Error(error.error || "Failed to save configuration");
       }
 
@@ -95,22 +63,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handleAuthorizeConnection = async () => {
-    setConnecting(true);
-    setMessage(null);
-
-    try {
-      await ensureSupabaseSession();
-      window.location.href = "/api/clickfunnels/auth";
-    } catch (errorValue: unknown) {
-      setMessage({
-        type: "error",
-        text: errorValue instanceof Error ? errorValue.message : "Failed to start authorization",
-      });
-      setConnecting(false);
-    }
-  };
-
   return (
     <div className="page-shell flex min-h-screen flex-col">
       <Header />
@@ -122,6 +74,14 @@ export default function SettingsPage() {
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
             Register OAuth credentials, define the workspace endpoint, and establish authorized API access.
           </p>
+          <div className="mt-4">
+            <Link
+              href="/settings/organization"
+              className="inline-flex h-10 items-center justify-center rounded-lg border border-border/80 bg-white/82 px-4 text-sm font-semibold transition-colors hover:bg-white"
+            >
+              Open Organization & Billing
+            </Link>
+          </div>
         </section>
 
         <section className="grid gap-5 lg:grid-cols-[0.95fr_1.45fr]">
@@ -245,19 +205,13 @@ export default function SettingsPage() {
                   {loading ? "Saving..." : "Save Configuration"}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={handleAuthorizeConnection}
-                  disabled={connecting}
+                <a
+                  href="/api/clickfunnels/auth"
                   className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-border/80 bg-white/82 px-5 text-sm font-semibold transition-colors hover:bg-white"
                 >
-                  {connecting ? (
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  ) : (
-                    <PlugZap className="h-4 w-4 text-primary" />
-                  )}
-                  {connecting ? "Authorizing..." : "Authorize Connection"}
-                </button>
+                  <PlugZap className="h-4 w-4 text-primary" />
+                  Authorize Connection
+                </a>
               </div>
             </form>
 

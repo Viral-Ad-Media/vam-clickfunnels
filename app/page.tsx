@@ -45,10 +45,10 @@ export default function Home() {
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/settings"
+                href="/signup"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-7 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/92"
               >
-                Configure Integration
+                Start Free Account
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -109,10 +109,10 @@ export default function Home() {
               </p>
             </div>
             <Link
-              href="/settings"
+              href="/signup"
               className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-7 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-100"
             >
-              Begin Setup
+              Create Account
             </Link>
           </div>
         </section>

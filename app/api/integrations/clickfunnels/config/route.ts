@@ -1,29 +1,42 @@
-// app/api/integrations/clickfunnels/config/route.ts
 import { NextResponse } from "next/server";
-import { ensureUserId, getAppConfig, upsertAppConfig } from "@/lib/clickfunnels/tokens";
+import {
+  ensureOrganizationContext,
+  getAppConfig,
+  upsertAppConfig,
+} from "@/lib/clickfunnels/tokens";
 
 function asObject(value: unknown): Record<string, unknown> {
   return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
 }
 
+function statusFromErrorMessage(message: string) {
+  const lowered = message.toLowerCase();
+  if (lowered.includes("not authenticated")) return 401;
+  if (lowered.includes("admin access")) return 403;
+  return 400;
+}
+
 export async function GET() {
   try {
-    const uid = await ensureUserId();
-    const cfg = await getAppConfig(uid);
+    const context = await ensureOrganizationContext();
+    const cfg = await getAppConfig(context.organizationId);
+
     // Do NOT leak secrets back – just shape for UI
     return NextResponse.json({
       ok: true,
       config: cfg ? { client_id: "••••", workspace_url: cfg.workspace_url, has_secret: true } : null,
+      organization_id: context.organizationId,
+      organization_role: context.organizationRole,
     });
   } catch (errorValue: unknown) {
     const message = errorValue instanceof Error ? errorValue.message : "Failed";
-    return NextResponse.json({ ok: false, error: message }, { status: 400 });
+    return NextResponse.json({ ok: false, error: message }, { status: statusFromErrorMessage(message) });
   }
 }
 
 export async function PATCH(req: Request) {
   try {
-    const uid = await ensureUserId();
+    const context = await ensureOrganizationContext({ requireManager: true });
     const rawBody: unknown = await req.json().catch(() => ({}));
     const body = asObject(rawBody);
 
@@ -42,7 +55,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ ok: false, error: "Invalid workspace_url" }, { status: 400 });
     }
 
-    await upsertAppConfig(uid, {
+    await upsertAppConfig(context.organizationId, context.userId, {
       client_id,
       client_secret,
       workspace_url: normalizedWorkspaceUrl,
@@ -51,6 +64,6 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ ok: true });
   } catch (errorValue: unknown) {
     const message = errorValue instanceof Error ? errorValue.message : "Failed";
-    return NextResponse.json({ ok: false, error: message }, { status: 400 });
+    return NextResponse.json({ ok: false, error: message }, { status: statusFromErrorMessage(message) });
   }
 }
